@@ -51,7 +51,7 @@ struct ContentView: View {
                     .pickerStyle(SegmentedPickerStyle())
                 }
                 
-                Section {
+                Section (header: Text("Amount per person")){
                     Text("$\(totalPerPerson, specifier: "%.2f")")
                 }
             }.onTapGesture(count: 2) {
