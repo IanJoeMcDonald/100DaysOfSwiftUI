@@ -41,6 +41,8 @@ struct ContentView: View {
                             .shadow(color: .black, radius: 2)
                     }
                 }
+                Text("Your score is \(score)")
+                    .foregroundColor(.white)
                 Spacer()
             }
         }.alert(isPresented: $showingScore) {
