@@ -59,6 +59,10 @@ struct ContentView: View {
             return
         }
         
+        guard isNotStart(word: answer) else {
+            wordError(title: "Word is start of suggestion", message: "The word cannot be the start of the suggestion")
+            return
+        }
         usedWords.insert(answer, at: 0)
         newWord = ""
     }
@@ -86,7 +90,21 @@ struct ContentView: View {
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
         
-        return misspelledRange.location == NSNotFound
+        return (misspelledRange.location == NSNotFound && word.count > 3)
+    }
+    
+    func isNotStart(word: String) -> Bool {
+        var tempWord = rootWord
+        
+        for letter in word {
+            if letter == tempWord.first {
+                tempWord.remove(at: tempWord.startIndex)
+            } else {
+                return true
+            }
+        }
+        
+        return false
     }
     
     func wordError(title: String, message: String) {
