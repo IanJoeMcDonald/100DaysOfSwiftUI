@@ -16,6 +16,18 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    var score: Int {
+        var score = 0
+        for word in usedWords {
+            if word.count < 6 {
+                score += word.count
+            } else {
+                score += (word.count * 2)
+            }
+        }
+        return score
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -28,6 +40,8 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                     Text($0)
                 }
+                Text("Your current score is \(score)")
+                    .font(.title)
             }
             .navigationBarTitle(rootWord)
             .navigationBarItems(leading: Button(action: startGame) {
