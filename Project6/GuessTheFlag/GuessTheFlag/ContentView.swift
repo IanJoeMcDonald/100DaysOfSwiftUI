@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var scoreMessage = ""
     @State private var score = 0
     @State private var animationAmount = [0.0, 0.0, 0.0]
+    @State private var opacity = [1.0, 1.0, 1.0]
     
     var body: some View {
         ZStack {
@@ -42,7 +43,7 @@ struct ContentView: View {
                             .overlay(Capsule().stroke(Color.black, lineWidth: 1))
                             .shadow(color: .black, radius: 2)
                             .rotation3DEffect(.degrees(self.animationAmount[number]), axis: (x: 0, y: 1, z: 0))
-                            
+                            .opacity(self.opacity[number])
                     }
                 }
                 Text("Your score is \(score)")
@@ -63,6 +64,11 @@ struct ContentView: View {
             score += 1
             withAnimation {
                 animationAmount[number] += 360
+                for index in 0 ..< 3 {
+                    if index != number {
+                        opacity[index] = 0.25
+                    }
+                }
             }
         } else {
             scoreTitle = "Wrong"
@@ -76,6 +82,11 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        withAnimation {
+            for index in 0 ..< 3 {
+                opacity[index] = 1.0
+            }
+        }
     }
 }
 
