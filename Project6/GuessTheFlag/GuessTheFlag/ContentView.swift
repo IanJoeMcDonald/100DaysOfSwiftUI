@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var score = 0
     @State private var animationAmount = [0.0, 0.0, 0.0]
     @State private var opacity = [1.0, 1.0, 1.0]
+    @State private var scaleAmount:[CGFloat] = [1.0, 1.0, 1.0]
     
     var body: some View {
         ZStack {
@@ -44,6 +45,7 @@ struct ContentView: View {
                             .shadow(color: .black, radius: 2)
                             .rotation3DEffect(.degrees(self.animationAmount[number]), axis: (x: 0, y: 1, z: 0))
                             .opacity(self.opacity[number])
+                            .scaleEffect(self.scaleAmount[number])
                     }
                 }
                 Text("Your score is \(score)")
@@ -74,6 +76,16 @@ struct ContentView: View {
             scoreTitle = "Wrong"
             scoreMessage = "Wrong! That's the flag of \(countries[number])\n"
             score -= 1
+            withAnimation {
+                scaleAmount[correctAnswer] = 1.5
+                animationAmount[correctAnswer] += 360
+                for index in 0 ..< 3 {
+                    if index != correctAnswer {
+                        opacity[index] = 0.25
+                        scaleAmount[index] = 0.25
+                    }
+                }
+            }
         }
         scoreMessage += "Your score is \(score)"
         showingScore = true
@@ -85,6 +97,7 @@ struct ContentView: View {
         withAnimation {
             for index in 0 ..< 3 {
                 opacity[index] = 1.0
+                scaleAmount[index] = 1.0
             }
         }
     }
