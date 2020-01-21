@@ -17,16 +17,16 @@ struct ContentView: View {
         NavigationView {
             List {
                 ForEach(expenses.items) { item in
-                    HStack {
-                        VStack {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type)
-                        }
-                        Spacer()
-                        Text("$\(item.amount)")
+                    if item.amount < 10 {
+                        ExpenseView(item: item)
+                            .foregroundColor(.green)
+                    } else if item.amount < 100 {
+                        ExpenseView(item: item)
+                            .foregroundColor(.yellow)
+                    } else {
+                        ExpenseView(item: item)
+                            .foregroundColor(.red)
                     }
-                    
                 }
                 .onDelete(perform: removeItems)
             }
@@ -45,6 +45,23 @@ struct ContentView: View {
     }
     func removeItems(at offsets: IndexSet) {
         expenses.items.remove(atOffsets: offsets)
+    }
+}
+
+struct ExpenseView : View {
+    
+    var item: ExpenseItem
+    
+    var body: some View {
+        HStack {
+            VStack {
+                Text(item.name)
+                    .font(.headline)
+                Text(item.type)
+            }
+            Spacer()
+            Text("$\(item.amount)")
+        }
     }
 }
 
