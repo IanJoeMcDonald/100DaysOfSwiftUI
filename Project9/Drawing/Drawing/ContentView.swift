@@ -10,10 +10,17 @@ import SwiftUI
 
 struct ContentView: View {
 
+    @State private var lineWidth: CGFloat = 5
+    
     var body: some View {
         Arrow()
-            .stroke(Color.red, lineWidth: 2)
+            .stroke(Color.red, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
             .frame(width:300, height: 400)
+            .onTapGesture {
+                withAnimation {
+                    self.lineWidth += 5
+                }
+        }
     }
 }
 
