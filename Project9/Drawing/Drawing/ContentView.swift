@@ -10,35 +10,40 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @State private var lineWidth: CGFloat = 5
-    
+    @State private var colorCycle = 0.0
+
     var body: some View {
-        Arrow()
-            .stroke(Color.red, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
-            .frame(width:300, height: 400)
-            .onTapGesture {
-                withAnimation {
-                    self.lineWidth += 5
-                }
+        VStack {
+            ColorCyclingRectangle(amount: self.colorCycle)
+                .frame(width: 300, height: 300)
+
+            Slider(value: $colorCycle)
         }
     }
 }
 
-struct Arrow: Shape {
-    func path(in rect: CGRect) -> Path {
-        let rectWidth = rect.width / CGFloat(4)
-        var path = Path()
-        
-        path.move(to: CGPoint(x: rect.minX + rectWidth, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX - rectWidth, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX - rectWidth, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.minX + rectWidth, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.minX + rectWidth, y: rect.maxY))
-        
-        return path
+struct ColorCyclingRectangle: View {
+    var amount = 0.0
+    var steps = 100
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<steps) { value in
+                Rectangle()
+                    .inset(by: CGFloat(value))
+                    .strokeBorder(self.color(for: value, brightness: 1), lineWidth: 2)
+            }
+        }
+    }
+
+    func color(for value: Int, brightness: Double) -> Color {
+        var targetHue = Double(value) / Double(self.steps) + self.amount
+
+        if targetHue > 1 {
+            targetHue -= 1
+        }
+
+        return Color(hue: targetHue, saturation: 1, brightness: brightness)
     }
 }
 
