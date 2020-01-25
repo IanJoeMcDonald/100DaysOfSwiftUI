@@ -16,6 +16,7 @@
 		9AB772CD23DC9A85000F8BE7 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB772CC23DC9A85000F8BE7 /* Order.swift */; };
 		9AB772CF23DC9DA8000F8BE7 /* AddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB772CE23DC9DA8000F8BE7 /* AddressView.swift */; };
 		9AB772D123DC9E56000F8BE7 /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB772D023DC9E56000F8BE7 /* CheckoutView.swift */; };
+		9AB772D323DCB136000F8BE7 /* OrderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB772D223DCB136000F8BE7 /* OrderItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		9AB772CC23DC9A85000F8BE7 /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
 		9AB772CE23DC9DA8000F8BE7 /* AddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressView.swift; sourceTree = "<group>"; };
 		9AB772D023DC9E56000F8BE7 /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
+		9AB772D223DCB136000F8BE7 /* OrderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				9AB772CC23DC9A85000F8BE7 /* Order.swift */,
 				9AB772CE23DC9DA8000F8BE7 /* AddressView.swift */,
 				9AB772D023DC9E56000F8BE7 /* CheckoutView.swift */,
+				9AB772D223DCB136000F8BE7 /* OrderItem.swift */,
 			);
 			path = CupcakeCorner;
 			sourceTree = "<group>";
@@ -157,6 +160,7 @@
 			files = (
 				9AB772D123DC9E56000F8BE7 /* CheckoutView.swift in Sources */,
 				9AB772B923DC95CE000F8BE7 /* AppDelegate.swift in Sources */,
+				9AB772D323DCB136000F8BE7 /* OrderItem.swift in Sources */,
 				9AB772BB23DC95CE000F8BE7 /* SceneDelegate.swift in Sources */,
 				9AB772CD23DC9A85000F8BE7 /* Order.swift in Sources */,
 				9AB772BD23DC95CE000F8BE7 /* ContentView.swift in Sources */,
