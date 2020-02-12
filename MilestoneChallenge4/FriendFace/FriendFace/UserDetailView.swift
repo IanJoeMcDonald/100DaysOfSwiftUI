@@ -9,16 +9,28 @@
 import SwiftUI
 
 struct UserDetailView: View {
-    let user: User
-    let users: [User]
-    let friends: [User]
+    let user: UsersStore
+    @FetchRequest(entity: UsersStore.entity(), sortDescriptors: []) var users: FetchedResults<UsersStore>
+    var friends: [UsersStore] {
+        var matches = [UsersStore]()
+        
+        for friend in user.friendsArray {
+            if let match = users.first(where: {$0.wrappedId == friend.wrappedId}) {
+                matches.append(match)
+            } else {
+                fatalError("Friend \(friend)")
+            }
+        }
+        
+        return matches
+    }
     
     var body: some View {
         GeometryReader { gemoetry in
             ScrollView(.vertical) {
                 VStack {
                     VStack(alignment: .leading) {
-                        Text(self.user.name)
+                        Text(self.user.wrappedName)
                         .font(.title)
                             .padding()
                         HStack(alignment: .top, spacing: 10) {
@@ -26,15 +38,15 @@ struct UserDetailView: View {
                                 Text("Company: ")
                                 Text("Email: ")
                                 Text("Age: ")
-                                Text("Address: " + self.user.address.newLineCharacters(of: ", "))
+                                Text("Address: " + self.user.wrappedAddress.newLineCharacters(of: ", "))
                                 Text("Tags: ")
                             }
                             VStack(alignment: .leading) {
-                                Text(self.user.company)
-                                Text(self.user.email)
-                                Text("\(self.user.age)")
-                                Text(self.user.address.replacingOccurrences(of: ", ", with: "\n"))
-                                Text(self.user.tags.joined(separator: ", "))
+                                Text(self.user.wrappedCompany)
+                                Text(self.user.wrappedEmail)
+                                Text("\(self.user.wrappedAge)")
+                                Text(self.user.wrappedAddress.replacingOccurrences(of: ", ", with: "\n"))
+                                Text(self.user.wrappedTags.joined(separator: ", "))
                             }
                         }
                     }
@@ -49,10 +61,9 @@ struct UserDetailView: View {
                         Text("Friends")
                             .font(.title)
                             .padding(.horizontal)
-                        ForEach(self.friends) { friend in
-                            NavigationLink(destination: UserDetailView(user: friend,
-                                                                       users: self.users)) {
-                                                                        Text(friend.name)
+                        ForEach(self.friends, id: \.self) { friend in
+                            NavigationLink(destination: UserDetailView(user: friend)) {
+                                                                        Text(friend.wrappedName)
                                                                             .padding(.horizontal)
                             }.padding(.horizontal)
                         }
@@ -65,33 +76,16 @@ struct UserDetailView: View {
                     
                     Spacer()
                 }
-            }.navigationBarTitle(Text(self.user.name), displayMode: .inline)
+            }.navigationBarTitle(Text(self.user.wrappedName), displayMode: .inline)
         }
-    }
-    
-    init(user: User, users: [User]) {
-        self.user = user
-        self.users = users
-        
-        var matches = [User]()
-        
-        for friend in user.friends {
-            if let match = users.first(where: {$0.id == friend.id}) {
-                matches.append(match)
-            } else {
-                fatalError("Friend \(friend)")
-            }
-        }
-        
-        self.friends = matches
     }
 }
 
 struct UserDetailView_Previews: PreviewProvider {
     
-    static let users = [User]()
+    static let users = [UsersStore]()
     
     static var previews: some View {
-        UserDetailView(user: users[0], users: users)
+        UserDetailView(user: users[0])
     }
 }

@@ -9,22 +9,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var users = [User]()
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(entity: UsersStore.entity(), sortDescriptors: []) var users: FetchedResults<UsersStore>
+    @State private var gotDataFromUrl = false
     
     var body: some View {
         NavigationView {
-            List(users) { user in
-                NavigationLink(destination: UserDetailView(user: user, users: self.users)) {
+            List(users, id: \.self) { user in
+                NavigationLink(destination: UserDetailView(user: user)) {
                     VStack(alignment: .leading) {
-                        Text(user.name)
+                        Text(user.wrappedName)
                             .font(.headline)
-                        Text(user.company)
+                        Text(user.wrappedCompany)
                     }
                 }
             }
             .navigationBarTitle("FriendFace")
             .onAppear(perform: {
-                self.getUsersFromUrl("https://www.hackingwithswift.com/samples/friendface.json")
+                if !self.gotDataFromUrl {
+                    self.getUsersFromUrl("https://www.hackingwithswift.com/samples/friendface.json")
+                }
+                self.gotDataFromUrl = true
             })
         }
     }
@@ -50,7 +55,26 @@ struct ContentView: View {
                 fatalError("Failed to decode type from URL")
             }
             
-            self.users = loaded
+            for user in loaded {
+                let entity = UsersStore(context: self.moc)
+                entity.id = user.id
+                entity.isActive = user.isActive
+                entity.name = user.name
+                entity.age = Int16(user.age)
+                entity.comapny = user.company
+                entity.email = user.email
+                entity.address = user.address
+                entity.about = user.about
+                entity.registered = user.registered
+                entity.tags = user.tags
+                for friend in user.friends {
+                    let friendEntity = FriendsStore(context: self.moc)
+                    friendEntity.id = friend.id
+                    friendEntity.name = friend.name
+                    friendEntity.user = entity
+                }
+                try? self.moc.save()
+            }
         }.resume()
     }
 }
