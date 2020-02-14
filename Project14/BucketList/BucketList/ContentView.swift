@@ -40,14 +40,16 @@ struct ContentView: View {
                             self.selectedPlace = newLocation
                             self.showingEditScreen = true
                         }) {
+                            // Appearence is the same but now the whole image is clickable instead
+                            // of just the plus symbol
                             Image(systemName: "plus")
+                            .padding()
+                            .background(Color.black.opacity(0.75))
+                            .foregroundColor(.white)
+                            .font(.title)
+                            .clipShape(Circle())
+                            .padding(.trailing)
                         }
-                        .padding()
-                        .background(Color.black.opacity(0.75))
-                        .foregroundColor(.white)
-                        .font(.title)
-                        .clipShape(Circle())
-                        .padding(.trailing)
                     }
                 }
             } else {
