@@ -20,9 +20,7 @@ struct MainView: View {
         ZStack {
             if isUnlocked {
                 MapView(centerCoordinate: $centerCoordinate,
-                        selectedPlace: $connections.selectedPlace,
-                        showingPlaceDetails: $connections.showingPlaceDetails,
-                        annotations: connections.locations)
+                        connections: connections)
                     .edgesIgnoringSafeArea(.all)
                 Circle()
                     .fill(Color.blue)
@@ -62,6 +60,7 @@ struct MainView: View {
                 .clipShape(Capsule())
             }
         }
+        
     }
     
     func authenticate() {
@@ -78,12 +77,19 @@ struct MainView: View {
                     if success {
                         self.isUnlocked = true
                     } else {
-                        // error
+                        self.connections.alertTitle = "Failed to Authenticate"
+                        self.connections.alertMessage = "Unable to authenticate you. Please try again"
+                        self.connections.showingAlertSecondButton = false
+                        self.connections.showingAlert = true
                     }
                 }
             }
         } else {
-            // no biometrics
+            self.connections.alertTitle = "Authentication not available"
+            self.connections.alertMessage = "Your device does not have biometric authentication."
+            self.connections.showingAlertSecondButton = false
+            self.isUnlocked = true
+            self.connections.showingAlert = true
         }
     }
 }

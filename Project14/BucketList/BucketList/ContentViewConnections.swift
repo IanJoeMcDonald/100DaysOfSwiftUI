@@ -11,6 +11,9 @@ import MapKit
 class ContentViewConnections: ObservableObject {
     @Published var locations = [CodableMKPointAnnotation]()
     @Published var selectedPlace: MKPointAnnotation?
-    @Published var showingPlaceDetails = false
+    @Published var alertTitle = ""
+    @Published var alertMessage = ""
+    @Published var showingAlert = false
+    @Published var showingAlertSecondButton = false
     @Published var showingEditScreen = false
 }

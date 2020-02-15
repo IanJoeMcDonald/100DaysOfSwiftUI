@@ -11,9 +11,7 @@ import MapKit
 
 struct MapView: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
-    @Binding var selectedPlace: MKPointAnnotation?
-    @Binding var showingPlaceDetails: Bool
-    var annotations: [MKPointAnnotation]
+    @ObservedObject var connections: ContentViewConnections
     
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -22,9 +20,9 @@ struct MapView: UIViewRepresentable {
     }
     
     func updateUIView(_ view: MKMapView, context: Context) {
-        if annotations.count != view.annotations.count {
+        if connections.locations.count != view.annotations.count {
             view.removeAnnotations(view.annotations)
-            view.addAnnotations(annotations)
+            view.addAnnotations(connections.locations)
         }
     }
     
@@ -73,8 +71,11 @@ struct MapView: UIViewRepresentable {
                      calloutAccessoryControlTapped control: UIControl) {
             guard let placemark = view.annotation as? MKPointAnnotation else { return }
             
-            parent.selectedPlace = placemark
-            parent.showingPlaceDetails = true
+            parent.connections.selectedPlace = placemark
+            parent.connections.alertTitle = placemark.title ?? "Unknown"
+            parent.connections.alertMessage = placemark.subtitle ?? "Unknown"
+            parent.connections.showingAlert = true
+            parent.connections.showingAlertSecondButton = true
         }
     }
 }
@@ -82,9 +83,7 @@ struct MapView: UIViewRepresentable {
 struct MapView_Previews: PreviewProvider {
     static var previews: some View {
         MapView(centerCoordinate: .constant(MKPointAnnotation.example.coordinate),
-                selectedPlace: .constant(MKPointAnnotation.example),
-                showingPlaceDetails: .constant(false),
-                annotations: [MKPointAnnotation.example])
+                connections: ContentViewConnections())
     }
 }
 

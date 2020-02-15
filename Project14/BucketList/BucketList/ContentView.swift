@@ -14,13 +14,19 @@ struct ContentView: View {
     
     var body: some View {
         MainView(connections: connections)
-            .alert(isPresented: $connections.showingPlaceDetails) {
-                Alert(title: Text(connections.selectedPlace?.title ?? "Unknown"),
-                      message: Text(connections.selectedPlace?.subtitle ??
-                        "Missing place information."), primaryButton: .default(Text("OK")),
-                                                       secondaryButton: .default(Text("Edit")) {
-                                                        self.connections.showingEditScreen = true
+            .alert(isPresented: $connections.showingAlert) {
+                if connections.showingAlertSecondButton {
+                    return Alert(title: Text(connections.alertTitle),
+                                 message: Text(connections.alertMessage),
+                                 primaryButton: .default(Text("OK")),
+                                 secondaryButton: .default(Text("Edit")) {
+                                self.connections.showingEditScreen = true
                     })
+                } else {
+                    return Alert(title: Text(connections.alertTitle),
+                          message: Text(connections.alertMessage),
+                          dismissButton: .default(Text("OK")))
+                }
         }
         .sheet(isPresented: $connections.showingEditScreen, onDismiss: saveData) {
             if self.connections.selectedPlace != nil {
