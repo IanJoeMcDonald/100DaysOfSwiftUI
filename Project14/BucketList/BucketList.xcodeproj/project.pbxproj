@@ -18,6 +18,8 @@
 		9AB0BA9223F6CC1A0069793C /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB0BA9123F6CC1A0069793C /* EditView.swift */; };
 		9AB0BA9423F6CDC50069793C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB0BA9323F6CDC50069793C /* Result.swift */; };
 		9AB0BA9623F6D1C30069793C /* MKPointAnnotation-Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB0BA9523F6D1C30069793C /* MKPointAnnotation-Codable.swift */; };
+		9AB0BA9823F84F4C0069793C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB0BA9723F84F4C0069793C /* MainView.swift */; };
+		9AB0BA9A23F851480069793C /* ContentViewConnections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB0BA9923F851480069793C /* ContentViewConnections.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		9AB0BA9123F6CC1A0069793C /* EditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		9AB0BA9323F6CDC50069793C /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		9AB0BA9523F6D1C30069793C /* MKPointAnnotation-Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKPointAnnotation-Codable.swift"; sourceTree = "<group>"; };
+		9AB0BA9723F84F4C0069793C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		9AB0BA9923F851480069793C /* ContentViewConnections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewConnections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				9AB0BA8F23F6CB970069793C /* MKPointAnnotation-ObservableObject.swift */,
 				9AB0BA9123F6CC1A0069793C /* EditView.swift */,
 				9AB0BA9523F6D1C30069793C /* MKPointAnnotation-Codable.swift */,
+				9AB0BA9723F84F4C0069793C /* MainView.swift */,
+				9AB0BA9923F851480069793C /* ContentViewConnections.swift */,
 			);
 			path = BucketList;
 			sourceTree = "<group>";
@@ -161,7 +167,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AB0BA9A23F851480069793C /* ContentViewConnections.swift in Sources */,
 				9AB0BA7A23F618D00069793C /* AppDelegate.swift in Sources */,
+				9AB0BA9823F84F4C0069793C /* MainView.swift in Sources */,
 				9AB0BA8E23F61FF20069793C /* MapView.swift in Sources */,
 				9AB0BA9223F6CC1A0069793C /* EditView.swift in Sources */,
 				9AB0BA7C23F618D00069793C /* SceneDelegate.swift in Sources */,

@@ -7,71 +7,24 @@
 //
 
 import SwiftUI
-import MapKit
-import LocalAuthentication
+
 
 struct ContentView: View {
-    @State private var centerCoordinate = CLLocationCoordinate2D()
-    @State private var locations = [CodableMKPointAnnotation]()
-    @State private var selectedPlace: MKPointAnnotation?
-    @State private var showingPlaceDetails = false
-    @State private var showingEditScreen = false
-    @State private var isUnlocked = false
+    @ObservedObject var connections = ContentViewConnections()
     
     var body: some View {
-        ZStack {
-            if isUnlocked {
-                MapView(centerCoordinate: $centerCoordinate, selectedPlace: $selectedPlace,
-                        showingPlaceDetails: $showingPlaceDetails, annotations: locations)
-                    .edgesIgnoringSafeArea(.all)
-                Circle()
-                    .fill(Color.blue)
-                    .opacity(0.3)
-                    .frame(width: 32, height: 32)
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            let newLocation = CodableMKPointAnnotation()
-                            newLocation.coordinate = self.centerCoordinate
-                            newLocation.title = "Example location"
-                            self.locations.append(newLocation)
-                            self.selectedPlace = newLocation
-                            self.showingEditScreen = true
-                        }) {
-                            // Appearence is the same but now the whole image is clickable instead
-                            // of just the plus symbol
-                            Image(systemName: "plus")
-                            .padding()
-                            .background(Color.black.opacity(0.75))
-                            .foregroundColor(.white)
-                            .font(.title)
-                            .clipShape(Circle())
-                            .padding(.trailing)
-                        }
-                    }
-                }
-            } else {
-                Button("Unlock Places") {
-                    self.authenticate()
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-            }
+        MainView(connections: connections)
+            .alert(isPresented: $connections.showingPlaceDetails) {
+                Alert(title: Text(connections.selectedPlace?.title ?? "Unknown"),
+                      message: Text(connections.selectedPlace?.subtitle ??
+                        "Missing place information."), primaryButton: .default(Text("OK")),
+                                                       secondaryButton: .default(Text("Edit")) {
+                                                        self.connections.showingEditScreen = true
+                    })
         }
-        .alert(isPresented: $showingPlaceDetails) {
-            Alert(title: Text(selectedPlace?.title ?? "Unknown"),
-                  message: Text(selectedPlace?.subtitle ?? "Missing place information."),
-                  primaryButton: .default(Text("OK")), secondaryButton: .default(Text("Edit")) {
-                    self.showingEditScreen = true
-                })
-        }
-        .sheet(isPresented: $showingEditScreen, onDismiss: saveData) {
-            if self.selectedPlace != nil {
-                EditView(placemark: self.selectedPlace!)
+        .sheet(isPresented: $connections.showingEditScreen, onDismiss: saveData) {
+            if self.connections.selectedPlace != nil {
+                EditView(placemark: self.connections.selectedPlace!)
             }
         }
         .onAppear(perform: loadData)
@@ -87,7 +40,8 @@ struct ContentView: View {
         
         do {
             let data = try Data(contentsOf: filename)
-            locations = try JSONDecoder().decode([CodableMKPointAnnotation].self, from: data)
+            connections.locations = try JSONDecoder().decode([CodableMKPointAnnotation].self,
+                                                             from: data)
         } catch {
             print("Unable to load saved data.")
         }
@@ -96,33 +50,10 @@ struct ContentView: View {
     func saveData() {
         do {
             let filename = getDocumentsDirectory().appendingPathComponent("SavedPlaces")
-            let data = try JSONEncoder().encode(self.locations)
+            let data = try JSONEncoder().encode(self.connections.locations)
             try data.write(to: filename, options: [.atomicWrite, .completeFileProtection])
         } catch {
             print("Unable to save data.")
-        }
-    }
-    
-    func authenticate() {
-        let context = LAContext()
-        var error: NSError?
-
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "Please authenticate yourself to unlock your places."
-
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
-                                   localizedReason: reason) { success, authenticationError in
-
-                DispatchQueue.main.async {
-                    if success {
-                        self.isUnlocked = true
-                    } else {
-                        // error
-                    }
-                }
-            }
-        } else {
-            // no biometrics
         }
     }
 }
