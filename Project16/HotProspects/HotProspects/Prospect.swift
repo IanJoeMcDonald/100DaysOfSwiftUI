@@ -19,7 +19,9 @@ class Prospects: ObservableObject {
     @Published private(set) var people: [Prospect]
     static let saveKey = "SavedData"
     init() {
-        if let data = UserDefaults.standard.data(forKey: Self.saveKey) {
+        let filename = Prospects.getDocumentsDirectory().appendingPathComponent(Self.saveKey)
+        
+        if let data = try? Data(contentsOf: filename) {
             if let decoded = try? JSONDecoder().decode([Prospect].self, from: data) {
                 self.people = decoded
                 return
@@ -30,9 +32,18 @@ class Prospects: ObservableObject {
     }
     
     private func save() {
-        if let encoded = try? JSONEncoder().encode(people) {
-            UserDefaults.standard.set(encoded, forKey: Self.saveKey)
+        do {
+            let filename = Prospects.getDocumentsDirectory().appendingPathComponent(Self.saveKey)
+            let data = try JSONEncoder().encode(people)
+            try data.write(to: filename, options: [.atomicWrite, .completeFileProtection])
+        } catch {
+            print("Unable to save data.")
         }
+    }
+    
+    static func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
     
     func toggle(_ prospect: Prospect) {
