@@ -19,6 +19,8 @@
 		6138FB072402BBED00219FB3 /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6138FB062402BBED00219FB3 /* Users.swift */; };
 		6138FB092402BDA600219FB3 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6138FB082402BDA600219FB3 /* AddView.swift */; };
 		6138FB0D2402F3FB00219FB3 /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6138FB0C2402F3FB00219FB3 /* Files.swift */; };
+		6184D86E240337F100CFAE27 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6184D86D240337F100CFAE27 /* MapView.swift */; };
+		6184D8702406AF4400CFAE27 /* LocationFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6184D86F2406AF4400CFAE27 /* LocationFetcher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		6138FB062402BBED00219FB3 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 		6138FB082402BDA600219FB3 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
 		6138FB0C2402F3FB00219FB3 /* Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Files.swift; sourceTree = "<group>"; };
+		6184D86D240337F100CFAE27 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		6184D86F2406AF4400CFAE27 /* LocationFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFetcher.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,7 @@
 		6138FAE924018BAE00219FB3 /* MeetupFaces */ = {
 			isa = PBXGroup;
 			children = (
+				6184D86D240337F100CFAE27 /* MapView.swift */,
 				6138FAFE2401A4BC00219FB3 /* ImagePicker.swift */,
 				6138FAEA24018BAF00219FB3 /* AppDelegate.swift */,
 				6138FAEC24018BAF00219FB3 /* SceneDelegate.swift */,
@@ -81,6 +86,7 @@
 				6138FB042402B90100219FB3 /* UserView.swift */,
 				6138FB082402BDA600219FB3 /* AddView.swift */,
 				6138FB0C2402F3FB00219FB3 /* Files.swift */,
+				6184D86F2406AF4400CFAE27 /* LocationFetcher.swift */,
 			);
 			path = MeetupFaces;
 			sourceTree = "<group>";
@@ -168,9 +174,11 @@
 				6138FAEB24018BAF00219FB3 /* AppDelegate.swift in Sources */,
 				6138FB092402BDA600219FB3 /* AddView.swift in Sources */,
 				6138FB002401A4BC00219FB3 /* ImagePicker.swift in Sources */,
+				6184D8702406AF4400CFAE27 /* LocationFetcher.swift in Sources */,
 				6138FB032401DF3C00219FB3 /* User.swift in Sources */,
 				6138FB0D2402F3FB00219FB3 /* Files.swift in Sources */,
 				6138FAED24018BAF00219FB3 /* SceneDelegate.swift in Sources */,
+				6184D86E240337F100CFAE27 /* MapView.swift in Sources */,
 				6138FAEF24018BAF00219FB3 /* ContentView.swift in Sources */,
 				6138FB052402B90100219FB3 /* UserView.swift in Sources */,
 			);

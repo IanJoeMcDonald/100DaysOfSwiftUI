@@ -7,38 +7,53 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct AddView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @ObservedObject var users: Users
     
+    @State private var centerCoordinate = CLLocationCoordinate2D()
     @State private var showingImagePicker = false
+    @State private var viewControl = 0
     @State private var name = ""
     @State private var info = ""
     @State private var image: Image?
     @State private var tempImage: UIImage?
     let uuid: String?
+    let locationFetcher = LocationFetcher()
     
     var body: some View {
         VStack(spacing: 30) {
-            ZStack {
-                Rectangle()
-                    .fill(Color.secondary)
-                
-                if image != nil {
-                    image?
-                        .resizable()
-                        .scaledToFit()
-                } else {
-                    Text("Tap to select a picture")
-                        .foregroundColor(.white)
-                        .font(.headline)
+            VStack {
+                Picker(selection: self.$viewControl, label: Text("View Control")) {
+                    Text("Photo").tag(0)
+                    Text("Map").tag(1)
                 }
-            }
-            .onTapGesture {
-                if self.uuid == nil {
-                    self.showingImagePicker = true
+                .pickerStyle(SegmentedPickerStyle())
+                if self.viewControl == 0 {
+                    ZStack {
+                        Rectangle()
+                            .fill(Color.secondary)
+                        
+                        if image != nil {
+                            image?
+                                .resizable()
+                                .scaledToFit()
+                        } else {
+                            Text("Tap to select a picture")
+                                .foregroundColor(.white)
+                                .font(.headline)
+                        }
+                    }
+                    .onTapGesture {
+                        if self.uuid == nil {
+                            self.showingImagePicker = true
+                        }
+                    }
+                } else {
+                    addMap()
                 }
             }
             VStack {
@@ -67,7 +82,7 @@ struct AddView: View {
         .sheet(isPresented: $showingImagePicker, onDismiss: imageAdded) {
             ImagePicker(image: self.$tempImage)
         }
-        .onAppear(perform: loadValues)
+        .onAppear(perform: startUp)
         
     }
     
@@ -85,12 +100,34 @@ struct AddView: View {
             }
         } else {
             let uuid = UUID().uuidString
-            let user = User(id: uuid, name: name, additional: info)
+            let location = locationFetcher.lastKnownLocation ?? CLLocationCoordinate2D()
+            let user = User(id: uuid, name: name, additional: info, location: location)
             LoadSave().saveImage(tempImage, forID: uuid)
             users.list.append(user)
         }
         LoadSave().saveUsers(users)
         presentationMode.wrappedValue.dismiss()
+    }
+    
+    func addMap() -> MapView {
+        let annotation = MKPointAnnotation()
+        if let uuid = uuid {
+            if let user = users.list.first(where: { $0.id == uuid }) {
+                annotation.coordinate = user.location
+                annotation.title = user.name
+                annotation.subtitle = user.additional
+            }
+        }
+        let mapView = MapView(centerCoordinate: $centerCoordinate)
+        mapView.showLocation(annotation.coordinate)
+        mapView.addAnnotation(annotation)
+        
+        return mapView
+    }
+    
+    func startUp() {
+        loadValues()
+        locationFetcher.start()
     }
     
     func loadValues() {
@@ -105,8 +142,6 @@ struct AddView: View {
             }
         }
     }
-    
-    
     
 }
 
