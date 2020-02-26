@@ -15,9 +15,15 @@ struct ProspectsView: View {
         case none, contacted, uncontacted
     }
     
+    enum OrderType {
+        case name, added
+    }
+    
     @EnvironmentObject var prospects: Prospects
     
     @State private var isShowingScanner = false
+    @State private var isShowingOrderBy = false
+    @State private var orderBy = OrderType.name
     
     let filter:FilterType
     var title: String {
@@ -32,13 +38,21 @@ struct ProspectsView: View {
     }
     
     var filteredProspects: [Prospect] {
+        let filteredList: [Prospect]
         switch filter {
         case .none:
-            return prospects.people
+            filteredList =  prospects.people
         case .contacted:
-            return prospects.people.filter { $0.isContacted }
+            filteredList = prospects.people.filter { $0.isContacted }
         case .uncontacted:
-            return prospects.people.filter { !$0.isContacted }
+            filteredList =  prospects.people.filter { !$0.isContacted }
+        }
+        
+        switch orderBy {
+        case .name:
+            return filteredList.sorted(by: { $0.name < $1.name })
+        case .added:
+            return filteredList.sorted(by: { $0.added > $1.added })
         }
     }
     
@@ -71,16 +85,27 @@ struct ProspectsView: View {
                 }
             }
             .navigationBarTitle(title)
-            .navigationBarItems(trailing: Button(action: {
-                self.isShowingScanner = true
+            .navigationBarItems(leading: Button(action: {
+                self.isShowingOrderBy = true
             }) {
-                Image(systemName: "qrcode.viewfinder")
-                Text("Scan")
+                Image(systemName: "arrow.up.arrow.down.square")
+                Text("Order By")
+                },trailing: Button(action: {
+                    self.isShowingScanner = true
+                }) {
+                    Image(systemName: "qrcode.viewfinder")
+                    Text("Scan")
             })
             .sheet(isPresented: $isShowingScanner) {
                 CodeScannerView(codeTypes: [.qr],
                                 simulatedData: "Paul Hudson\npaul@hackingwithswift.com",
                                 completion: self.handleScan)
+            }
+            .actionSheet(isPresented: $isShowingOrderBy) {
+                ActionSheet(title: Text("Filter By: ..."), message: nil, buttons: [
+                    .default(Text("Name"), action: { self.orderBy = .name }),
+                    .default(Text("Added"), action: { self.orderBy = .added })
+                ])
             }
         }
     }
