@@ -9,6 +9,10 @@
 import SwiftUI
 import CoreHaptics
 
+enum ActiveSheet {
+    case edit, settings
+}
+
 struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
@@ -16,10 +20,12 @@ struct ContentView: View {
     @State private var cards = [Card]()
     @State private var timeRemaining = 100
     @State private var isActive = true
-    @State private var showingEditScreen = false
+    @State private var showingSheet = false
+    @State private var activeSheet: ActiveSheet = .edit
     @State private var isShowingMessage = false
     @State private var engine: CHHapticEngine?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    var settings = Settings()
     
     var body: some View {
         ZStack {
@@ -41,11 +47,15 @@ struct ContentView: View {
                 
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: self.cards[index]) {
+                        CardView(card: self.cards[index], removal: {
                             withAnimation {
                                 self.removeCard(at: index)
                             }
-                        }
+                        }, replace: {
+                            withAnimation {
+                                self.replaceCard(at: index)
+                            }
+                        })
                         .stacked(at: index, in: self.cards.count)
                         .allowsHitTesting(index == self.cards.count - 1)
                         .accessibility(hidden: index < self.cards.count - 1)
@@ -71,7 +81,18 @@ struct ContentView: View {
             VStack {
                 HStack {
                     Button(action: {
-                        self.showingEditScreen = true
+                        self.showingSheet = true
+                        self.activeSheet = .settings
+                    }) {
+                        Image(systemName: "gear")
+                            .padding()
+                            .background(Color.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                    Button(action: {
+                        self.showingSheet = true
+                        self.activeSheet = .edit
                     }) {
                         Image(systemName: "plus.circle")
                             .padding()
@@ -91,7 +112,7 @@ struct ContentView: View {
                     HStack {
                         Button(action: {
                             withAnimation {
-                                self.removeCard(at: self.cards.count - 1)
+                                self.replaceCard(at: self.cards.count - 1)
                             }
                         }) {
                             Image(systemName: "xmark.circle")
@@ -150,10 +171,15 @@ struct ContentView: View {
                 self.isActive = true
             }
         }
-        .sheet(isPresented: $showingEditScreen, onDismiss: resetCards) {
-            EditCards()
+        .sheet(isPresented: $showingSheet, onDismiss: resetCards) {
+            if self.activeSheet == .edit {
+                EditCards()
+            } else {
+                SettingsView().environmentObject(self.settings)
+            }
         }
         .onAppear(perform: resetCards)
+        
     }
     
     func removeCard(at index: Int) {
@@ -164,8 +190,19 @@ struct ContentView: View {
         }
     }
     
+    func replaceCard(at index: Int) {
+        print("Replacing Card")
+        guard index >= 0 else { return }
+        let card = cards.remove(at: index)
+        if settings.replaceIncorrectAnswers {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.cards.insert(card, at: 0)
+            }
+        }
+    }
+    
     func resetCards() {
-        timeRemaining = 10
+        timeRemaining = 100
         isActive = true
         isShowingMessage = false
         loadData()

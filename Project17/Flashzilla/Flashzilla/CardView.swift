@@ -18,6 +18,7 @@ struct CardView: View {
     
     let card: Card
     var removal: (() -> Void)? = nil
+    var replace: (() -> Void)? = nil
     
     var body: some View {
         ZStack {
@@ -71,10 +72,11 @@ struct CardView: View {
                     if abs(self.offset.width) > 100 {
                         if self.offset.width > 0 {
                             self.feedback.notificationOccurred(.success)
+                            self.removal?()
                         } else {
                             self.feedback.notificationOccurred(.error)
+                            self.replace?()
                         }
-                        self.removal?()
                     } else {
                         self.offset = .zero
                     }
