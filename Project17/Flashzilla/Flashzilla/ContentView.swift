@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import CoreHaptics
 
 struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
@@ -16,6 +17,8 @@ struct ContentView: View {
     @State private var timeRemaining = 100
     @State private var isActive = true
     @State private var showingEditScreen = false
+    @State private var isShowingMessage = false
+    @State private var engine: CHHapticEngine?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -24,7 +27,7 @@ struct ContentView: View {
                 .resizable()
                 .scaledToFill()
                 .edgesIgnoringSafeArea(.all)
-            VStack {
+            VStack(spacing: 10) {
                 Text("Time: \(timeRemaining)")
                     .font(.largeTitle)
                     .foregroundColor(.white)
@@ -49,6 +52,14 @@ struct ContentView: View {
                     }
                 }
                 .allowsHitTesting(timeRemaining > 0)
+                if isShowingMessage {
+                    Text("Time Expired")
+                        .padding()
+                        .background(Color.black.opacity(0.7))
+                        .clipShape(Capsule())
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                }
                 if cards.isEmpty {
                     Button("Start Again", action : resetCards)
                         .padding()
@@ -117,6 +128,17 @@ struct ContentView: View {
             if self.timeRemaining > 0 {
                 self.timeRemaining -= 1
             }
+            
+            if self.timeRemaining == 1 {
+                self.prepareHaptics()
+            }
+            if self.timeRemaining == 0 {
+                if !self.isShowingMessage {
+                    self.endOfTimeHaptic()
+                }
+                self.cards.removeAll()
+                self.isShowingMessage = true
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for:
             UIApplication.willResignActiveNotification)) { _ in
@@ -143,8 +165,9 @@ struct ContentView: View {
     }
     
     func resetCards() {
-        timeRemaining = 100
+        timeRemaining = 10
         isActive = true
+        isShowingMessage = false
         loadData()
     }
     
@@ -153,6 +176,51 @@ struct ContentView: View {
             if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
                 self.cards = decoded
             }
+        }
+    }
+    
+    func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        do {
+            self.engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            print("There was an errorcreating the engine: \(error.localizedDescription)")
+        }
+    }
+    
+    func endOfTimeHaptic() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        var events = [CHHapticEvent]()
+        
+        for i in stride(from: 0, to: 1, by: 0.1) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(i))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(i))
+            let event = CHHapticEvent(eventType: .hapticTransient,
+                                      parameters: [intensity, sharpness],
+                                      relativeTime: i)
+            events.append(event)
+        }
+        
+        for i in stride(from: 0, to: 1, by: 0.1) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity,
+                                                   value: Float(1 - i))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness,
+                                                   value: Float(1 - i))
+            let event = CHHapticEvent(eventType: .hapticTransient,
+                                      parameters: [intensity, sharpness],
+                                      relativeTime: 1 + i)
+            events.append(event)
+        }
+        
+        
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription)")
         }
     }
 }
