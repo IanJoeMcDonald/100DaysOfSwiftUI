@@ -33,7 +33,8 @@ struct CardView: View {
                     differentiateWithoutColor ?
                         nil :
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(offset.width > 0 ? Color.green : Color.red)
+                            .fill(offset.width == 0 ? Color.white :
+                                 (offset.width > 0 ? Color.green : Color.red))
                 )
                 .shadow(radius: 10)
             
