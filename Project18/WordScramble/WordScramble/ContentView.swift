@@ -43,6 +43,8 @@ struct ContentView: View {
                         GeometryReader { geo in
                             HStack() {
                                 Image(systemName: "\(word.count).circle")
+                                    .foregroundColor(self.calculateColor(localGeometry: geo,
+                                                                         globalGeometry: fullView))
                                 Text(word)
                                 Spacer()
                             }
@@ -80,6 +82,26 @@ struct ContentView: View {
                 fullView.size.width / 3
             return max(currentOffset - ContentView.lastOffset, 0)
         }
+    }
+    
+    func calculateColor(localGeometry geo: GeometryProxy,
+                        globalGeometry fullView: GeometryProxy) -> Color {
+        let itemPercentage = getItemPercent(localGeometry: geo, globalGeometry: fullView)
+        let value = itemPercentage/100
+        
+        return Color(hue: value, saturation: 0.9, brightness: 0.9)
+        
+        //The suggestion was to use RGB but hue gives more variety
+        //return Color(red: value, green: value, blue: 0)
+    }
+    
+    func getItemPercent(localGeometry geo: GeometryProxy,
+                        globalGeometry fullView: GeometryProxy) -> Double {
+        let listHeight = fullView.size.height
+        let listStart = fullView.frame(in: .global).minY
+        let itemStart = geo.frame(in: .global).minY
+        
+        return Double((itemStart - listStart) / listHeight * 100)
     }
     
     func addNewWord() {
