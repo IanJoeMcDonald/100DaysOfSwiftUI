@@ -16,7 +16,14 @@ class Favorites: ObservableObject {
     private let saveKey = "Favorites"
     
     init() {
-        // load our saved data
+        let location = Favorites.getDocumentsDirectory().appendingPathComponent(saveKey)
+        
+        if let data = try? Data(contentsOf: location) {
+            if let decoded = try? JSONDecoder().decode([String].self, from: data) {
+                self.resorts = Set<String>(decoded)
+                return
+            }
+        }
         
         // still here? Use an empty array
         self.resorts = []
@@ -41,7 +48,20 @@ class Favorites: ObservableObject {
         save()
     }
     
-    func save() {
-        // write out our data
+    private func save() {
+        let location = Favorites.getDocumentsDirectory().appendingPathComponent(saveKey)
+        
+        do {
+            let array: [String] = Array(resorts)
+            let data = try JSONEncoder().encode(array)
+            try data.write(to: location, options: [.atomicWrite, .completeFileProtection])
+        } catch {
+            print("Unable to save data")
+        }
+    }
+    
+    static func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
 }
